@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sinpex UTM Builder</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f8f7;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
+.card{background:#fff;border-radius:12px;border:1px solid #e8e8e6;padding:2rem;width:100%;max-width:580px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.header{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #e8e8e6}
+.logo{font-size:18px;font-weight:600;color:#1a1a1a}
+.logo span{color:#7F77DD}
+.bar{display:flex;gap:5px;margin-bottom:1.5rem}
+.dot{height:4px;flex:1;border-radius:2px;background:#e8e8e6}
+.dot.d{background:#1D9E75}.dot.a{background:#7F77DD}
+.step{display:none}.step.on{display:block}
+h2{font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.sub{font-size:13px;color:#787774;margin-bottom:1.25rem}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:1rem}
+.ob{background:#fff;border:1px solid #e8e8e6;border-radius:8px;padding:10px 14px;text-align:left;cursor:pointer;font-size:14px;color:#1a1a1a;transition:all 0.1s}
+.ob:hover{border-color:#7F77DD;background:#EEEDFE}
+.ob.s{border-color:#7F77DD;background:#EEEDFE;color:#3C3489}
+.ol{font-weight:500}.od{font-size:12px;color:#9b9a97;margin-top:2px}
+.ob.s .od{color:#534AB7}
+.ti{width:100%;border:1px solid #e8e8e6;border-radius:8px;padding:10px 14px;font-size:14px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;transition:border-color 0.1s}
+.ti:focus{border-color:#7F77DD}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
+.bb{background:#fff;border:1px solid #e8e8e6;border-radius:8px;padding:8px 16px;font-size:14px;cursor:pointer;color:#787774;font-family:inherit}
+.bb:hover{background:#f8f8f7}
+.bn{background:#7F77DD;border:none;border-radius:8px;padding:8px 20px;font-size:14px;font-weight:500;cursor:pointer;color:#fff;font-family:inherit}
+.bn:hover{background:#534AB7}.bn:disabled{opacity:0.35;cursor:not-allowed}
+.ch{background:#f8f8f7;border:1px solid #e8e8e6;border-radius:999px;padding:5px 14px;font-size:13px;cursor:pointer;color:#787774;display:inline-block}
+.ch:hover,.ch.s{border-color:#7F77DD;color:#534AB7;background:#EEEDFE}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.pv{font-size:12px;color:#787774;margin-bottom:1rem;background:#f8f8f7;padding:8px 12px;border-radius:6px}
+.pv code{color:#534AB7;font-family:'SF Mono',Monaco,monospace;font-size:11px}
+.rb{background:#f8f8f7;border-radius:10px;border:1px solid #e8e8e6;padding:1.25rem;margin-bottom:1rem}
+.ru{font-family:'SF Mono',Monaco,monospace;font-size:12px;color:#534AB7;word-break:break-all;margin-bottom:1rem;line-height:1.7;background:#fff;padding:10px 12px;border-radius:6px;border:1px solid #e8e8e6}
+.cb{background:#fff;border:1px solid #e8e8e6;border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;color:#1a1a1a;margin-bottom:1.25rem;font-family:inherit}
+.cb:hover{background:#f8f8f7}
+.hl{font-size:11px;font-weight:600;color:#9b9a97;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+.ht{width:100%;font-size:13px;border-collapse:collapse}
+.ht td{padding:6px 0;border-bottom:1px solid #e8e8e6}
+.ht td:first-child{color:#787774;width:130px}
+.ht td:last-child{font-weight:500;color:#1a1a1a}
+.rst{background:#fff;border:1px solid #e8e8e6;border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;color:#787774;margin-top:8px;font-family:inherit}
+.rst:hover{background:#f8f8f7}
+.skip{font-size:12px;color:#9b9a97;cursor:pointer;text-decoration:underline}
+.info{font-size:12px;background:#EEEDFE;color:#534AB7;border-radius:8px;padding:8px 12px;margin-bottom:10px}
+.warn{font-size:12px;background:#FFFBEB;color:#92400E;border-radius:8px;padding:8px 12px;margin-bottom:10px;border:1px solid #FDE68A}
+.lbl{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
+.hint{font-size:12px;color:#9b9a97;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="logo">Sinpex <span>UTM Builder</span></div>
+  </div>
+
+  <div class="bar">
+    <div class="dot a" id="p0"></div><div class="dot" id="p1"></div>
+    <div class="dot" id="p2"></div><div class="dot" id="p3"></div>
+    <div class="dot" id="p4"></div><div class="dot" id="p5"></div>
+    <div class="dot" id="p6"></div>
+  </div>
+
+  <!-- S0: URL -->
+  <div class="step on" id="s0">
+    <h2>Welche URL soll getrackt werden?</h2>
+    <p class="sub">Basis-URL ohne UTM-Parameter</p>
+    <input class="ti" id="u0" type="url" placeholder="https://www.sinpex.de/webinars/..." style="margin-bottom:8px"/>
+    <div class="nav"><span></span><button class="bn" id="b0" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S1: Source -->
+  <div class="step" id="s1">
+    <h2>Woher kommt der Traffic?</h2>
+    <p class="sub">utm_source</p>
+    <div class="opts" id="so">
+      <button class="ob" data-v="linkedin"><div class="ol">LinkedIn</div><div class="od">Ads, organische Posts, Camillos Profil</div></button>
+      <button class="ob" data-v="google"><div class="ol">Google</div><div class="od">Google Ads (Paid) oder organische Suche</div></button>
+      <button class="ob" data-v="event"><div class="ol">Event / Messe</div><div class="od">Physisches Event oder Messe</div></button>
+      <button class="ob" data-v="referral"><div class="ol">Referral</div><div class="od">Kundenempfehlung, Investor, Partner oder externer Artikel</div></button>
+      <button class="ob" data-v="email"><div class="ol">E-Mail</div><div class="od">E-Mail-Kampagne — Second Touch / Customer Journey</div></button>
+    </div>
+    <div id="email-warn" class="warn" style="display:none">E-Mail-UTMs sind für Kampagnen an bereits bestehende Kontakte in HubSpot gedacht — nicht zur Gewinnung neuer Kontakte.</div>
+    <div class="nav"><button class="bb" onclick="go(0)">← Zurück</button><button class="bn" id="b1" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S2: Medium -->
+  <div class="step" id="s2">
+    <h2>Über welches Medium?</h2>
+    <p class="sub">utm_medium</p>
+    <div class="opts" id="mo"></div>
+    <div class="nav"><button class="bb" onclick="go(1)">← Zurück</button><button class="bn" id="b2" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S3: LinkedIn Profil -->
+  <div class="step" id="s3">
+    <h2>Von welchem LinkedIn-Profil?</h2>
+    <p class="sub">Legt den Kampagnen-Präfix fest</p>
+    <div class="opts" id="lpo">
+      <button class="ob" data-v="company"><div class="ol">Sinpex Company Page</div><div class="od">Präfix: company-</div></button>
+      <button class="ob" data-v="camillo"><div class="ol">Camillos persönliches Profil</div><div class="od">Präfix: camillo-</div></button>
+    </div>
+    <div class="nav"><button class="bb" onclick="go(2)">← Zurück</button><button class="bn" id="b3" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S4p: Paid Kampagnenname -->
+  <div class="step" id="s4p">
+    <h2>Kampagnenname</h2>
+    <p class="sub">utm_campaign</p>
+    <div id="s4p-info" class="info"></div>
+    <p class="lbl">Wie heißt die Kampagne im Ads-Tool?</p>
+    <p class="hint">Exakter Name aus LinkedIn Campaign Manager oder Google Ads</p>
+    <input class="ti" id="camp-paid" placeholder="z.B. KYB Automation Webinar April 2026" style="margin-bottom:8px"/>
+    <div class="pv">utm_campaign: <code id="camp-paid-prev">—</code></div>
+    <div class="nav"><button class="bb" id="b4p-back">← Zurück</button><button class="bn" id="b4p" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S4oa: Organic Typ -->
+  <div class="step" id="s4oa">
+    <h2>Was für eine Kampagne?</h2>
+    <p class="sub">utm_campaign — Typ wählen</p>
+    <div id="s4o-info" class="info"></div>
+    <div class="opts" id="type-org">
+      <button class="ob" data-v="webinar"><div class="ol">webinar</div><div class="od">Webinar-Anmeldung oder Aufzeichnung</div></button>
+      <button class="ob" data-v="whitepaper"><div class="ol">whitepaper</div><div class="od">Whitepaper oder Report Download</div></button>
+      <button class="ob" data-v="demo"><div class="ol">demo</div><div class="od">Demo Request</div></button>
+      <button class="ob" data-v="other"><div class="ol">Anderes</div><div class="od">Eigenen Typ eingeben</div></button>
+    </div>
+    <input class="ti" id="type-other" placeholder="Eigener Typ (z.B. info, guide)" style="display:none;margin-top:8px"/>
+    <div class="nav"><button class="bb" id="b4oa-back">← Zurück</button><button class="bn" id="b4oa" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S4ob: Organic Thema -->
+  <div class="step" id="s4ob">
+    <h2>Was ist das Thema?</h2>
+    <p class="sub">Kurzes Stichwort auf Englisch — Bindestriche statt Leerzeichen</p>
+    <input class="ti" id="th" placeholder="z.B. kyb-automation, eu-aml-survey" style="margin-bottom:8px"/>
+    <div class="pv">Vorschau: <code id="camp-org-prev">—</code></div>
+    <div class="nav"><button class="bb" onclick="go('4oa')">← Zurück</button><button class="bn" id="b4ob" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S4oc: Sprache + Datum -->
+  <div class="step" id="s4oc">
+    <h2>Sprache & Datum</h2>
+    <p class="sub">Für welche Sprache und wann startet die Kampagne?</p>
+    <p class="lbl" style="margin-bottom:8px">Sprache</p>
+    <div class="chips" style="margin-bottom:16px">
+      <span class="ch" data-v="de" onclick="sl(this)">🇩🇪 Deutsch</span>
+      <span class="ch" data-v="en" onclick="sl(this)">🇬🇧 English</span>
+    </div>
+    <p class="lbl" style="margin-bottom:3px">Datum</p>
+    <p class="hint">Format: TTMMJJJJ — z.B. 02042026 für 2. April 2026</p>
+    <input class="ti" id="dt" placeholder="02042026" maxlength="8" style="margin-bottom:8px"/>
+    <div class="pv">utm_campaign: <code id="camp-org-final">—</code></div>
+    <div class="nav"><button class="bb" onclick="go('4ob')">← Zurück</button><button class="bn" id="b4oc" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S4ev: Event -->
+  <div class="step" id="s4ev">
+    <h2>Wie heißt das Event?</h2>
+    <p class="sub">utm_campaign — Präfix: event-</p>
+    <p class="hint">Name des Events — keine Leerzeichen, Bindestriche als Trenner</p>
+    <input class="ti" id="ev-name" placeholder="z.B. digitalx-koeln-062026" style="margin-bottom:8px"/>
+    <div class="pv">utm_campaign: <code id="ev-prev">—</code></div>
+    <div class="nav"><button class="bb" onclick="go(1)">← Zurück</button><button class="bn" id="b4ev" disabled>Fertig ✓</button></div>
+  </div>
+
+  <!-- S4ref: Referral Subtyp -->
+  <div class="step" id="s4ref">
+    <h2>Art der Empfehlung</h2>
+    <p class="sub">Differenzierung über utm_medium</p>
+    <div class="opts" id="ref-opts">
+      <button class="ob" data-v="kunde"><div class="ol">Kundenreferral</div><div class="od">Empfehlung durch einen Bestandskunden</div></button>
+      <button class="ob" data-v="investor"><div class="ol">Investor</div><div class="od">Kontakt über einen Investor</div></button>
+      <button class="ob" data-v="partner"><div class="ol">Partner</div><div class="od">Kontakt über einen Partner</div></button>
+      <button class="ob" data-v="artikel"><div class="ol">Artikel über Sinpex</div><div class="od">Externer Artikel — kein UTM-Einfluss möglich</div></button>
+    </div>
+    <div class="nav"><button class="bb" onclick="go(1)">← Zurück</button><button class="bn" id="b4ref" disabled>Weiter →</button></div>
+  </div>
+
+  <!-- S4refname: Referral Name -->
+  <div class="step" id="s4refname">
+    <h2>Name</h2>
+    <p class="sub" id="ref-name-sub">utm_campaign</p>
+    <p class="hint" id="ref-name-hint">Name eingeben</p>
+    <input class="ti" id="ref-name" placeholder="z.B. musterbank-ag" style="margin-bottom:8px"/>
+    <div class="pv">utm_campaign: <code id="ref-name-prev">—</code></div>
+    <div class="nav"><button class="bb" onclick="go('4ref')">← Zurück</button><button class="bn" id="b4refname" disabled>Fertig ✓</button></div>
+  </div>
+
+  <!-- S4artikel: Artikel Hinweis -->
+  <div class="step" id="s4artikel">
+    <h2>Externer Artikel</h2>
+    <div class="warn">Auf externe Artikel haben wir keinen Einfluss auf UTM-Parameter — der Link kommt von der anderen Website. Es ist kein UTM-Link nötig.</div>
+    <p style="font-size:13px;color:#787774;margin-bottom:1rem">Falls du einen Link auf sinpex.de teilst, gehe zurück und wähle „Kundenreferral".</p>
+    <div class="nav"><button class="bb" onclick="go('4ref')">← Zurück</button><button class="bn" onclick="restart()">Neu starten</button></div>
+  </div>
+
+  <!-- S4go: Google Organic Hinweis -->
+  <div class="step" id="s4go">
+    <h2>Google Organic Search</h2>
+    <div class="info">Für organische Google-Suche werden keine UTM-Parameter benötigt — HubSpot trackt das automatisch über den Original Traffic Source.</div>
+    <p style="font-size:13px;color:#787774;margin-bottom:1rem">UTMs sind nur bei Google Ads (Paid Search) nötig. Falls du einen bezahlten Link erstellen möchtest, gehe zurück.</p>
+    <div class="nav"><button class="bb" onclick="go(2)">← Zurück</button><button class="bn" onclick="restart()">Neu starten</button></div>
+  </div>
+
+  <!-- S5: Creative Ja/Nein -->
+  <div class="step" id="s5">
+    <h2>Creative tracken?</h2>
+    <p class="sub">utm_content — optional</p>
+    <div class="opts">
+      <button class="ob" id="cy"><div class="ol">Ja — Creative tracken</div><div class="od">Bild oder Video aus der Kampagne</div></button>
+      <button class="ob" id="cno"><div class="ol">Nein — ohne Creative weiter</div></button>
+    </div>
+    <div class="nav"><button class="bb" id="b5-back">← Zurück</button></div>
+  </div>
+
+  <!-- S5bp: Paid Creative -->
+  <div class="step" id="s5bp">
+    <h2>Creative / Ad-Name</h2>
+    <p class="sub">utm_content — Name aus dem Ads-Tool</p>
+    <p class="hint">Exakter Name aus LinkedIn Campaign Manager</p>
+    <input class="ti" id="cnt-paid" placeholder="z.B. Banner KYB Webinar v1 DE" style="margin-bottom:8px"/>
+    <div class="pv">utm_content: <code id="cnt-paid-prev">—</code></div>
+    <div class="nav">
+      <button class="bb" onclick="go(5)">← Zurück</button>
+      <div style="display:flex;gap:12px;align-items:center">
+        <span class="skip" onclick="sc()">Überspringen</span>
+        <button class="bn" id="b5bp" disabled>Fertig ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5bo: Organic Creative -->
+  <div class="step" id="s5bo">
+    <h2>Creative-Details</h2>
+    <p class="sub">utm_content — Format und Beschreibung</p>
+    <div class="chips" id="fc" style="margin-bottom:12px">
+      <span class="ch" data-v="image" onclick="sf(this)">image — Bild / Banner</span>
+      <span class="ch" data-v="video" onclick="sf(this)">video — Video Creative</span>
+    </div>
+    <input class="ti" id="cnt-org" placeholder="Beschreibung (z.B. kyb-webinar-banner)" style="margin-bottom:8px"/>
+    <div class="pv">utm_content: <code id="cnt-org-prev">—</code></div>
+    <div class="nav">
+      <button class="bb" onclick="go(5)">← Zurück</button>
+      <div style="display:flex;gap:12px;align-items:center">
+        <span class="skip" onclick="sc()">Überspringen</span>
+        <button class="bn" id="b5bo" disabled>Fertig ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: Ergebnis -->
+  <div class="step" id="s6">
+    <div style="margin-bottom:1rem"><span style="background:#EEEDFE;color:#3C3489;font-size:11px;padding:3px 10px;border-radius:999px;font-weight:600">✓ UTM-Link fertig</span></div>
+    <div class="rb">
+      <div class="hl">Dein UTM-Link</div>
+      <div class="ru" id="fu">—</div>
+      <button class="cb" onclick="cu()">📋 Link kopieren</button>
+      <div class="hl">Was in HubSpot landet</div>
+      <table class="ht">
+        <tr><td>Initial Source</td><td id="rs">—</td></tr>
+        <tr><td>Initial Medium</td><td id="rm">—</td></tr>
+        <tr><td>Initial Campaign</td><td id="rc">—</td></tr>
+        <tr><td>Initial Content</td><td id="rk">—</td></tr>
+        <tr id="rterm-row" style="display:none"><td>utm_term</td><td id="rt">—</td></tr>
+      </table>
+    </div>
+    <button class="rst" onclick="restart()">↺ Neuen Link erstellen</button>
+  </div>
+</div>
+
+<script>
+var V={url:'',src:'',med:'',profile:'',campaign:'',content:'',term:'',isPaid:false};
+var SM={linkedin:'LinkedIn',google:'Google',event:'Event',referral:'Referral',email:'E-Mail'};
+var MM={'paid-social':'Paid Social','organic-social':'Organic Social','paid-search':'Paid Search','email':'E-Mail','event':'Offline / Event','kunde':'Kunde','investor':'Investor','partner':'Partner','artikel':'Artikel'};
+var MO={
+  linkedin:[{v:'paid-social',d:'LinkedIn Ads / Lead Forms (bezahlt)'},{v:'organic-social',d:'Organischer Post (Company Page oder Camillo)'}],
+  google:[{v:'paid-search',d:'Google Ads (bezahlt)'},{v:'organic-search',d:'Organische Suche — keine UTMs nötig'}]
+};
+var PREFIX={
+  'linkedin-paid-social-company':'company-','linkedin-paid-social-camillo':'camillo-',
+  'linkedin-organic-social-company':'company-','linkedin-organic-social-camillo':'camillo-'
+};
+var langVal='de';var langChosen=false;var orgType='';var fmtVal='';var refType='';
+
+function typeKey(){var k=V.src+'-'+V.med;if(V.profile)k+='-'+V.profile;return k;}
+function getPrefix(){return PREFIX[typeKey()]||'';}
+
+function go(n){
+  document.querySelectorAll('.step').forEach(function(s){s.classList.remove('on')});
+  document.getElementById('s'+n).classList.add('on');
+  var map={'0':0,'1':1,'2':2,'3':2,'4p':3,'4oa':3,'4ob':4,'4oc':5,'4ev':2,'4ref':2,'4refname':3,'4artikel':3,'4go':3,'5':4,'5bp':5,'5bo':5,'6':6};
+  var ni=map[String(n)];if(ni===undefined)ni=0;
+  for(var i=0;i<7;i++){var d=document.getElementById('p'+i);d.classList.remove('d','a');if(i<ni)d.classList.add('d');else if(i===ni)d.classList.add('a');}
+  window.scrollTo(0,0);
+}
+
+function clean(s){return(s||'').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');}
+function sd(){var n=new Date();document.getElementById('dt').value=String(n.getDate()).padStart(2,'0')+String(n.getMonth()+1).padStart(2,'0')+n.getFullYear();}
+
+// S0
+document.getElementById('u0').addEventListener('input',function(){document.getElementById('b0').disabled=this.value.trim().length<10;});
+document.getElementById('b0').addEventListener('click',function(){V.url=document.getElementById('u0').value.trim();sd();go(1);});
+
+// S1: Source
+document.getElementById('so').addEventListener('click',function(e){
+  var b=e.target.closest('.ob');if(!b)return;
+  document.querySelectorAll('#so .ob').forEach(function(x){x.classList.remove('s')});
+  b.classList.add('s');V.src=b.dataset.v;V.med='';V.profile='';
+  document.getElementById('email-warn').style.display=V.src==='email'?'block':'none';
+  document.getElementById('b1').disabled=false;
+  if(V.src==='linkedin'||V.src==='google'){bm();}
+});
+document.getElementById('b1').addEventListener('click',function(){
+  if(V.src==='linkedin'||V.src==='google') go(2);
+  else if(V.src==='event'){V.med='event';go('4ev');}
+  else if(V.src==='referral'){V.med='';go('4ref');}
+  else if(V.src==='email'){V.med='email';buildOrgTypes('');document.getElementById('s4o-info').style.display='none';document.getElementById('b4oa-back').onclick=function(){go(1);};go('4oa');}
+});
+
+// S2: Medium
+function bm(){
+  var o=MO[V.src]||[];var el=document.getElementById('mo');el.innerHTML='';
+  o.forEach(function(x){var b=document.createElement('button');b.className='ob';b.dataset.v=x.v;
+    b.innerHTML='<div class="ol">'+x.v+'</div><div class="od">'+x.d+'</div>';el.appendChild(b);});
+  document.getElementById('b2').disabled=true;
+}
+document.getElementById('mo').addEventListener('click',function(e){
+  var b=e.target.closest('.ob');if(!b)return;
+  document.querySelectorAll('#mo .ob').forEach(function(x){x.classList.remove('s')});
+  b.classList.add('s');V.med=b.dataset.v;V.isPaid=(V.med==='paid-social'||V.med==='paid-search');
+  document.getElementById('b2').disabled=false;
+});
+document.getElementById('b2').addEventListener('click',function(){
+  if(V.med==='organic-search'){go('4go');return;}
+  if(V.src==='linkedin'){V.profile='';document.querySelectorAll('#lpo .ob').forEach(function(x){x.classList.remove('s')});document.getElementById('b3').disabled=true;go(3);}
+  else afterMedium();
+});
+
+// S3: LinkedIn Profil
+document.getElementById('lpo').addEventListener('click',function(e){
+  var b=e.target.closest('.ob');if(!b)return;
+  document.querySelectorAll('#lpo .ob').forEach(function(x){x.classList.remove('s')});
+  b.classList.add('s');V.profile=b.dataset.v;document.getElementById('b3').disabled=false;
+});
+document.getElementById('b3').addEventListener('click',function(){if(!this.disabled)afterMedium();});
+
+function afterMedium(){
+  var pfx=getPrefix();
+  var infoEl=document.getElementById('s4p-info');
+  var orgInfoEl=document.getElementById('s4o-info');
+  if(V.isPaid){
+    if(pfx){infoEl.textContent='Kampagnenname beginnt mit „'+pfx+'"';infoEl.style.display='block';}
+    else{infoEl.style.display='none';}
+    document.getElementById('camp-paid').value='';document.getElementById('camp-paid-prev').textContent='—';
+    document.getElementById('b4p').disabled=true;
+    document.getElementById('b4p-back').onclick=function(){V.src==='linkedin'?go(3):go(2);};
+    go('4p');
+  } else {
+    buildOrgTypes(pfx);
+    if(pfx){orgInfoEl.textContent='Kampagnenname beginnt mit „'+pfx+'"';orgInfoEl.style.display='block';}
+    else{orgInfoEl.style.display='none';}
+    document.getElementById('b4oa-back').onclick=function(){V.src==='linkedin'?go(3):go(2);};
+    go('4oa');
+  }
+}
+
+// S4p: Paid
+document.getElementById('camp-paid').addEventListener('input',function(){
+  var v=clean(this.value.trim());V.campaign=getPrefix()+v;
+  document.getElementById('camp-paid-prev').textContent=V.campaign||'—';
+  document.getElementById('b4p').disabled=!v;
+});
+document.getElementById('b4p').addEventListener('click',function(){
+  if(V.src==='google'){V.term='{keyword}';br();go(6);}
+  else{document.getElementById('b5-back').onclick=function(){go('4p');};go(5);}
+});
+
+// S4oa: Organic Typ
+function buildOrgTypes(pfx){
+  orgType='';
+  document.querySelectorAll('#type-org .ob').forEach(function(x){x.classList.remove('s')});
+  document.getElementById('type-other').style.display='none';
+  document.getElementById('b4oa').disabled=true;
+}
+document.getElementById('type-org').addEventListener('click',function(e){
+  var b=e.target.closest('.ob');if(!b)return;
+  document.querySelectorAll('#type-org .ob').forEach(function(x){x.classList.remove('s')});
+  b.classList.add('s');orgType=b.dataset.v;
+  document.getElementById('type-other').style.display=orgType==='other'?'block':'none';
+  document.getElementById('b4oa').disabled=orgType==='other';
+});
+document.getElementById('type-other').addEventListener('input',function(){
+  var v=clean(this.value.trim());document.getElementById('b4oa').disabled=!v;if(v)orgType=v;
+});
+document.getElementById('b4oa').addEventListener('click',function(){
+  if(orgType==='other')orgType=clean(document.getElementById('type-other').value)||'other';
+  document.getElementById('th').value='';updateThPrev();checkTh();go('4ob');
+});
+
+// S4ob: Thema
+function updateThPrev(){
+  var pfx=getPrefix();
+  var th=clean(document.getElementById('th').value||'');
+  document.getElementById('camp-org-prev').textContent=th?(pfx+orgType+'-'+th):(pfx+orgType+'…');
+}
+function checkTh(){document.getElementById('b4ob').disabled=clean(document.getElementById('th').value||'').length<2;}
+document.getElementById('th').addEventListener('input',function(){updateThPrev();checkTh();});
+document.getElementById('b4ob').addEventListener('click',function(){go('4oc');});
+
+// S4oc: Sprache + Datum
+function sl(el){
+  document.querySelectorAll('.ch[data-v]').forEach(function(x){if(x.onclick&&x.onclick.toString().includes('sl'))x.classList.remove('s');});
+  el.classList.add('s');langVal=el.dataset.v;langChosen=true;updateFinalPrev();checkDate();
+}
+document.getElementById('dt').addEventListener('input',function(){updateFinalPrev();checkDate();});
+function updateFinalPrev(){
+  var pfx=getPrefix();
+  var th=clean(document.getElementById('th').value||'');
+  var dt=document.getElementById('dt').value.trim();
+  V.campaign=[pfx+orgType,th,langVal,dt].filter(Boolean).join('-');
+  document.getElementById('camp-org-final').textContent=V.campaign||'—';
+}
+function checkDate(){document.getElementById('b4oc').disabled=!(langChosen&&document.getElementById('dt').value.trim().length>=6);}
+document.getElementById('b4oc').addEventListener('click',function(){
+  updateFinalPrev();
+  if(V.src==='email'){br();go(6);}
+  else{document.getElementById('b5-back').onclick=function(){go('4oc');};go(5);}
+});
+
+// S4ev: Event
+document.getElementById('ev-name').addEventListener('input',function(){
+  var v=clean(this.value.trim());V.campaign='event-'+v;V.med='event';
+  document.getElementById('ev-prev').textContent=V.campaign||'—';
+  document.getElementById('b4ev').disabled=!v;
+});
+document.getElementById('b4ev').addEventListener('click',function(){br();go(6);});
+
+// S4ref
+document.getElementById('ref-opts').addEventListener('click',function(e){
+  var b=e.target.closest('.ob');if(!b)return;
+  document.querySelectorAll('#ref-opts .ob').forEach(function(x){x.classList.remove('s')});
+  b.classList.add('s');refType=b.dataset.v;document.getElementById('b4ref').disabled=false;
+});
+document.getElementById('b4ref').addEventListener('click',function(){
+  V.med=refType;
+  if(refType==='artikel'){go('4artikel');return;}
+  var hints={kunde:['Kundenname','Name des Kunden (z.B. musterbank-ag)'],investor:['Investorenname','Name des Investors'],partner:['Partnername','Name des Partners']};
+  var h=hints[refType]||['Name','Name eingeben'];
+  document.getElementById('ref-name-sub').textContent=h[0]+' — utm_campaign: referral-'+refType+'-[name]';
+  document.getElementById('ref-name-hint').textContent=h[1];
+  document.getElementById('ref-name').value='';document.getElementById('ref-name-prev').textContent='—';
+  document.getElementById('b4refname').disabled=true;go('4refname');
+});
+document.getElementById('ref-name').addEventListener('input',function(){
+  var v=clean(this.value.trim());V.campaign='referral-'+refType+'-'+v;
+  document.getElementById('ref-name-prev').textContent=V.campaign||'—';
+  document.getElementById('b4refname').disabled=!v;
+});
+document.getElementById('b4refname').addEventListener('click',function(){br();go(6);});
+
+// S5: Creative
+document.getElementById('cy').addEventListener('click',function(){go(V.isPaid?'5bp':'5bo');});
+document.getElementById('cno').addEventListener('click',function(){V.content='';br();go(6);});
+
+document.getElementById('cnt-paid').addEventListener('input',function(){
+  V.content=this.value.trim();
+  document.getElementById('cnt-paid-prev').textContent=V.content||'—';
+  document.getElementById('b5bp').disabled=!V.content;
+});
+document.getElementById('b5bp').addEventListener('click',function(){br();go(6);});
+
+function sf(el){document.querySelectorAll('#fc .ch').forEach(function(x){x.classList.remove('s')});el.classList.add('s');fmtVal=el.dataset.v;uoc();}
+document.getElementById('cnt-org').addEventListener('input',function(){uoc();});
+function uoc(){
+  var d=clean(document.getElementById('cnt-org').value||'');
+  if(fmtVal&&d){V.content=fmtVal+'-'+d;document.getElementById('cnt-org-prev').textContent=V.content;}
+  else document.getElementById('cnt-org-prev').textContent='—';
+  document.getElementById('b5bo').disabled=!(fmtVal&&d);
+}
+document.getElementById('b5bo').addEventListener('click',function(){br();go(6);});
+function sc(){V.content='';br();go(6);}
+
+function br(){
+  var url=V.url;var sep=url.indexOf('?')>=0?'&':'?';
+  var p='utm_source='+V.src+'&utm_medium='+V.med+'&utm_campaign='+V.campaign;
+  if(V.content)p+='&utm_content='+encodeURIComponent(V.content);
+  if(V.term)p+='&utm_term='+encodeURIComponent(V.term);
+  document.getElementById('fu').textContent=url+sep+p;
+  document.getElementById('rs').textContent=SM[V.src]||V.src;
+  document.getElementById('rm').textContent=MM[V.med]||V.med;
+  document.getElementById('rc').textContent=V.campaign;
+  document.getElementById('rk').textContent=V.content||'—';
+  var tr=document.getElementById('rterm-row');
+  if(V.term){tr.style.display='';document.getElementById('rt').textContent=V.term;}
+  else tr.style.display='none';
+}
+
+function cu(){
+  navigator.clipboard.writeText(document.getElementById('fu').textContent).then(function(){
+    var b=document.querySelector('.cb');b.textContent='✓ Kopiert!';
+    setTimeout(function(){b.textContent='📋 Link kopieren';},2000);
+  });
+}
+
+function restart(){
+  V={url:'',src:'',med:'',profile:'',campaign:'',content:'',term:'',isPaid:false};
+  langVal='de';langChosen=false;orgType='';fmtVal='';refType='';
+  ['u0','camp-paid','th','dt','cnt-paid','cnt-org','type-other','ev-name','ref-name'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  document.querySelectorAll('.ob,.ch').forEach(function(b){b.classList.remove('s')});
+  ['b0','b1','b2','b3','b4p','b4oa','b4ob','b4oc','b4ev','b4ref','b4refname','b5bp','b5bo'].forEach(function(id){var e=document.getElementById(id);if(e)e.disabled=true;});
+  document.getElementById('type-other').style.display='none';
+  document.getElementById('email-warn').style.display='none';
+  ['camp-paid-prev','camp-org-prev','camp-org-final','cnt-paid-prev','cnt-org-prev','ev-prev','ref-name-prev'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='—';});
+  go(0);
+}
+</script>
+</body>
+</html>
